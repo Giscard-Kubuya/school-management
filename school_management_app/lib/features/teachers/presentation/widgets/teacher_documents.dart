@@ -1,0 +1,1 @@
+// Teacher documents widget implementation

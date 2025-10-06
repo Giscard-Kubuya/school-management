@@ -1,0 +1,1 @@
+// Student documents widget implementation

@@ -1,0 +1,1 @@
+// Attendance restore widget implementation

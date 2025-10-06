@@ -1,0 +1,1 @@
+// Attendance reset widget implementation

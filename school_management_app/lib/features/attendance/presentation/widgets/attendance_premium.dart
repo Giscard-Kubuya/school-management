@@ -1,0 +1,1 @@
+// Attendance premium widget implementation

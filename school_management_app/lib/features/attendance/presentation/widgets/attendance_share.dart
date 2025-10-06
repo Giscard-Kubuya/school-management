@@ -1,0 +1,1 @@
+// Attendance share widget implementation

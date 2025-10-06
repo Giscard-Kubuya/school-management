@@ -1,0 +1,1 @@
+// Attendance receipts widget implementation

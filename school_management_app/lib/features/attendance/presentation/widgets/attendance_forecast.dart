@@ -1,0 +1,1 @@
+// Attendance forecast widget implementation

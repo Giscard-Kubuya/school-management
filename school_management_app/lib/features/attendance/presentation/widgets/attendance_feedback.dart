@@ -1,0 +1,1 @@
+// Attendance feedback widget implementation

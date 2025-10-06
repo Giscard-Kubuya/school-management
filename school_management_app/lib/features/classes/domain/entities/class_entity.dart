@@ -1,0 +1,1 @@
+// Class entity implementation

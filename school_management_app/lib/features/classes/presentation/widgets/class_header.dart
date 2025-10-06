@@ -1,0 +1,1 @@
+// Class header widget implementation

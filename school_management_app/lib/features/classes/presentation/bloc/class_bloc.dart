@@ -1,0 +1,1 @@
+// Class bloc implementation

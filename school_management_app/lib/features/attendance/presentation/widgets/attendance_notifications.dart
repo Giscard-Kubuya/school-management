@@ -1,0 +1,1 @@
+// Attendance notifications widget implementation

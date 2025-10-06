@@ -1,0 +1,1 @@
+// Onboarding indicator widget implementation

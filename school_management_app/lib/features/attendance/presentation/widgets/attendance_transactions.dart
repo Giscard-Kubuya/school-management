@@ -1,0 +1,1 @@
+// Attendance transactions widget implementation

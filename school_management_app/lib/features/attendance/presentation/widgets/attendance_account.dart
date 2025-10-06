@@ -1,0 +1,1 @@
+// Attendance account widget implementation

@@ -1,0 +1,1 @@
+// Attendance plans widget implementation

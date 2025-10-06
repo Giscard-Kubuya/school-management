@@ -1,0 +1,1 @@
+// Assignment bloc implementation

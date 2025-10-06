@@ -1,0 +1,1 @@
+// Attendance invoices widget implementation

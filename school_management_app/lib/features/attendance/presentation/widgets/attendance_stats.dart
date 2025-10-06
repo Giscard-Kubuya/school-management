@@ -1,0 +1,1 @@
+// Attendance stats widget implementation

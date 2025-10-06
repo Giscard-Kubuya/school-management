@@ -1,0 +1,1 @@
+// Attendance donate widget implementation

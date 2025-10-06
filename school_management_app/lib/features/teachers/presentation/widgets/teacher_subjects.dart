@@ -1,0 +1,1 @@
+// Teacher subjects widget implementation

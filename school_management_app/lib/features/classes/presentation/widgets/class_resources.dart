@@ -1,0 +1,1 @@
+// Class resources widget implementation

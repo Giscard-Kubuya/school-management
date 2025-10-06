@@ -1,0 +1,1 @@
+// Attendance actions widget implementation

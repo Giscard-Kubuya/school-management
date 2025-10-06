@@ -1,0 +1,1 @@
+// Attendance upgrade widget implementation

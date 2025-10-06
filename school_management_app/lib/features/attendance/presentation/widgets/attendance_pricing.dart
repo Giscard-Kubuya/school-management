@@ -1,0 +1,1 @@
+// Attendance pricing widget implementation

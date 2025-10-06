@@ -1,0 +1,1 @@
+// Attendance trends widget implementation

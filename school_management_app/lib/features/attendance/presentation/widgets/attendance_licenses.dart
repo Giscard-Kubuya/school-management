@@ -1,0 +1,1 @@
+// Attendance licenses widget implementation

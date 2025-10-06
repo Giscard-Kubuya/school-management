@@ -274,25 +274,28 @@ lib/
 ### 1. **Clean Architecture Layers**
 
 #### **Presentation Layer**
+
 - **Responsibility**: UI, user interactions, state management
 - **Components**: Pages, Widgets, BLoC/Cubit
-- **Rules**: 
+- **Rules**:
   - Can only depend on Domain layer
   - No direct access to Data layer
   - Uses UseCases to interact with business logic
 
 #### **Domain Layer**
+
 - **Responsibility**: Business logic, entities, contracts
 - **Components**: Entities, UseCases, Repository interfaces
-- **Rules**: 
+- **Rules**:
   - Pure Dart (no Flutter dependencies)
   - No dependencies on other layers
   - Defines contracts (interfaces)
 
 #### **Data Layer**
+
 - **Responsibility**: Data management, API, database
 - **Components**: Models, Repositories (impl), DataSources
-- **Rules**: 
+- **Rules**:
   - Implements Domain contracts
   - Handles data transformation
   - Manages local and remote data sources
@@ -302,11 +305,13 @@ lib/
 ### 2. **Feature-First Organization**
 
 Each feature is **self-contained** with its own:
+
 - Data layer (models, datasources, repositories)
 - Domain layer (entities, usecases)
 - Presentation layer (UI, state management)
 
 **Benefits**:
+
 - ✅ Easy to navigate
 - ✅ Clear boundaries
 - ✅ Scalable
@@ -317,6 +322,7 @@ Each feature is **self-contained** with its own:
 ### 3. **State Management: BLoC Pattern**
 
 **Why BLoC?**
+
 - ✅ Predictable state management
 - ✅ Testable business logic
 - ✅ Clear separation of concerns
@@ -324,6 +330,7 @@ Each feature is **self-contained** with its own:
 - ✅ Official Flutter recommendation
 
 **Structure**:
+
 ```dart
 feature/
   └── presentation/
@@ -338,6 +345,7 @@ feature/
 ### 4. **Dependency Injection: GetIt + Injectable**
 
 **Setup**:
+
 ```dart
 // di/injection_container.dart
 final sl = GetIt.instance;
@@ -347,7 +355,7 @@ Future<void> configureDependencies() async {
   // Register services
   sl.registerLazySingleton<ApiClient>(() => ApiClient());
   sl.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
-  
+
   // Register repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
@@ -355,7 +363,7 @@ Future<void> configureDependencies() async {
       localDataSource: sl(),
     ),
   );
-  
+
   // Register use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
 }
@@ -386,6 +394,7 @@ Future<void> configureDependencies() async {
 ```
 
 **Flow**:
+
 1. UI requests data from Repository
 2. Repository checks Local DataSource first
 3. If data exists and fresh → return immediately
@@ -406,7 +415,7 @@ class SyncManager {
   - Automatic sync (on app start, periodic)
   - Background sync (when online)
   - Conflict resolution (last-write-wins, manual)
-  
+
   // Sync queue
   - Queue offline operations
   - Retry failed operations
@@ -424,40 +433,40 @@ class SyncManager {
 dependencies:
   flutter:
     sdk: flutter
-  
+
   # State Management
   flutter_bloc: ^8.1.3
   equatable: ^2.0.5
-  
+
   # Dependency Injection
   get_it: ^7.6.4
   injectable: ^2.3.2
-  
+
   # Navigation
   go_router: ^13.0.0
-  
+
   # Network
   dio: ^5.4.0
   connectivity_plus: ^5.0.2
   pretty_dio_logger: ^1.3.1
-  
+
   # Local Storage
   sqflite: ^2.3.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   shared_preferences: ^2.2.2
   flutter_secure_storage: ^9.0.0
-  
+
   # Code Generation
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
-  
+
   # UI/UX
   google_fonts: ^6.1.0
   cached_network_image: ^3.3.0
   shimmer: ^3.0.0
   lottie: ^3.0.0
-  
+
   # Utilities
   intl: ^0.19.0
   path_provider: ^2.1.1
@@ -465,12 +474,12 @@ dependencies:
   file_picker: ^6.1.1
   image_picker: ^1.0.5
   url_launcher: ^6.2.2
-  
+
   # Firebase (optional)
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.9
   firebase_analytics: ^10.8.0
-  
+
   # Other
   uuid: ^4.2.2
   logger: ^2.0.2+1
@@ -479,17 +488,17 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+
   # Code Generation
   build_runner: ^2.4.7
   freezed: ^2.4.5
   json_serializable: ^6.7.1
   injectable_generator: ^2.4.1
-  
+
   # Testing
   mockito: ^5.4.4
   bloc_test: ^9.1.5
-  
+
   # Linting
   flutter_lints: ^3.0.1
 ```
@@ -573,8 +582,9 @@ test/
 ## 📝 Naming Conventions
 
 ### Files
+
 - **Snake case**: `user_repository.dart`
-- **Suffix by type**: 
+- **Suffix by type**:
   - Models: `user_model.dart`
   - Entities: `user.dart`
   - Pages: `login_page.dart`
@@ -582,12 +592,14 @@ test/
   - BLoC: `auth_bloc.dart`, `auth_event.dart`, `auth_state.dart`
 
 ### Classes
+
 - **Pascal case**: `UserRepository`, `LoginPage`
 - **Prefix by type**:
   - Abstract classes: `abstract class AuthRepository`
   - Implementations: `class AuthRepositoryImpl implements AuthRepository`
 
 ### Variables
+
 - **Camel case**: `userName`, `isLoading`
 - **Private**: `_privateVariable`
 
@@ -596,6 +608,7 @@ test/
 ## 🚀 Implementation Order
 
 ### Phase 1: Core Setup (Week 1)
+
 1. ✅ Set up folder structure
 2. ✅ Configure dependencies
 3. ✅ Set up dependency injection
@@ -604,18 +617,21 @@ test/
 6. ✅ Configure routing
 
 ### Phase 2: Authentication (Week 2)
+
 1. ✅ Implement auth data layer
 2. ✅ Implement auth domain layer
 3. ✅ Implement auth presentation layer
 4. ✅ Test authentication flow
 
 ### Phase 3: Core Features (Week 3-4)
+
 1. ✅ Implement database layer
 2. ✅ Implement sync mechanism
 3. ✅ Implement home/dashboard
 4. ✅ Implement profile
 
 ### Phase 4: Academic Features (Week 5-12)
+
 1. ✅ Courses module
 2. ✅ Assignments module
 3. ✅ Grades module

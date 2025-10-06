@@ -1,0 +1,1 @@
+// Attendance membership widget implementation

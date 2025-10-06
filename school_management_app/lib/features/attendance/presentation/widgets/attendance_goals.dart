@@ -1,0 +1,1 @@
+// Attendance goals widget implementation

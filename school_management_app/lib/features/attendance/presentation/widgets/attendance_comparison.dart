@@ -1,0 +1,1 @@
+// Attendance comparison widget implementation

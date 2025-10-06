@@ -1,0 +1,1 @@
+// Attendance support widget implementation

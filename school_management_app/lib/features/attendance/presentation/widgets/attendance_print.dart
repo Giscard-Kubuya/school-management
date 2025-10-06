@@ -1,0 +1,1 @@
+// Attendance print widget implementation

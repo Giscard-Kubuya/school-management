@@ -1,0 +1,1 @@
+// Attendance timeline widget implementation

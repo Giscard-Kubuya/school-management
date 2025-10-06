@@ -1,0 +1,1 @@
+// Attendance heatmap widget implementation

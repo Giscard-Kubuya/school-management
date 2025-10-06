@@ -1,0 +1,1 @@
+// Onboarding content widget implementation

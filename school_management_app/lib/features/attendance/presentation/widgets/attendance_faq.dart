@@ -1,0 +1,1 @@
+// Attendance FAQ widget implementation

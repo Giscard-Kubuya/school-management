@@ -1,0 +1,1 @@
+// Attendance export widget implementation

@@ -1,0 +1,1 @@
+// Attendance subscribe widget implementation

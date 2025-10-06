@@ -1,0 +1,1 @@
+// Auth header widget implementation

@@ -1,0 +1,1 @@
+// Attendance backup widget implementation

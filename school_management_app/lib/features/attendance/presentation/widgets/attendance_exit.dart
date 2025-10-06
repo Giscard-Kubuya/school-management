@@ -1,0 +1,1 @@
+// Attendance exit widget implementation

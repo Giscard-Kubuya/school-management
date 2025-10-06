@@ -1,0 +1,1 @@
+// Attendance profile widget implementation

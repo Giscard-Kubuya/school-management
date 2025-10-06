@@ -1,0 +1,1 @@
+// Attendance settings widget implementation

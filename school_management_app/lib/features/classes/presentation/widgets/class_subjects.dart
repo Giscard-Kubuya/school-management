@@ -1,0 +1,1 @@
+// Class subjects widget implementation

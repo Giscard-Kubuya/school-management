@@ -1,0 +1,1 @@
+// Attendance insights widget implementation

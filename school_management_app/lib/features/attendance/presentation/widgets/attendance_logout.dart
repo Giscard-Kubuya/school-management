@@ -1,0 +1,1 @@
+// Attendance logout widget implementation
