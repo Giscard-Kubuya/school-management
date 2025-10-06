@@ -8,7 +8,7 @@ This folder contains the complete database schema for the **School Management Sy
 
 ## 📂 Schema Files
 
-All 38 tables are organized into 8 category files:
+All 48 tables are organized into 9 category files:
 
 ### [01_INSTITUTIONAL_TABLES.md](01_INSTITUTIONAL_TABLES.md)
 Core institutional structure tables (4 tables):
@@ -70,6 +70,19 @@ Communication and document management (8 tables):
 - `documents` - Document/file storage
 - `course_materials` - Course-specific learning materials
 - `document_downloads` - Download tracking and analytics
+
+### [09_FINANCE_PAYMENT.md](09_FINANCE_PAYMENT.md)
+Finance and payment management (10 tables):
+- `financial_accounts` - User wallet and account balances
+- `transactions` - All financial transactions
+- `transaction_categories` - Transaction categorization
+- `payment_methods` - User payment methods
+- `document_payments` - Paid document access tracking
+- `tuition_fees` - Student tuition billing
+- `fee_payments` - Tuition payment records
+- `payment_plans` - Installment payment plans
+- `financial_history` - Complete financial audit trail
+- `withdrawal_requests` - Money withdrawal requests
 
 ---
 

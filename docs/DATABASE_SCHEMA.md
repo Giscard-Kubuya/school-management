@@ -11,7 +11,7 @@
 
 ## 🎯 Schema Overview
 
-**Total Tables**: 38
+**Total Tables**: 48
 **Relationships**: Fully normalized with foreign keys
 **Sync Support**: All tables include sync metadata
 **Offline-First**: Designed for local-first operation
@@ -79,6 +79,18 @@ DOCUMENTS & MATERIALS (4 tables)
 ├── documents
 ├── course_materials
 └── document_downloads
+
+FINANCE & PAYMENTS (10 tables)
+├── financial_accounts
+├── transactions
+├── transaction_categories
+├── payment_methods
+├── document_payments
+├── tuition_fees
+├── fee_payments
+├── payment_plans
+├── financial_history
+└── withdrawal_requests
 
 SYSTEM & PERMISSIONS (4 tables)
 ├── roles
@@ -916,11 +928,19 @@ Due to character limits, I'll continue with the remaining tables in the next fil
 
 **All 38 tables have been fully documented!**
 
-For better organization and readability, the complete database schema has been split into **8 category files** located in the [database/](database/) subfolder:
+For better organization and readability, the complete database schema has been split into **9 category files** located in the [database/](database/) subfolder:
 
 ### 📂 Complete Schema Files:
 
 1. **[01_INSTITUTIONAL_TABLES.md](database/01_INSTITUTIONAL_TABLES.md)** - 4 tables
+2. **[02_ACADEMIC_PERIODS.md](database/02_ACADEMIC_PERIODS.md)** - 2 tables
+3. **[03_USER_MANAGEMENT.md](database/03_USER_MANAGEMENT.md)** - 5 tables
+4. **[04_DEVICE_AUTH.md](database/04_DEVICE_AUTH.md)** - 3 tables
+5. **[05_COURSES.md](database/05_COURSES.md)** - 4 tables
+6. **[06_ASSIGNMENTS.md](database/06_ASSIGNMENTS.md)** - 5 tables
+7. **[07_GRADING_ATTENDANCE.md](database/07_GRADING_ATTENDANCE.md)** - 6 tables
+8. **[08_COMMUNICATION_DOCS.md](database/08_COMMUNICATION_DOCS.md)** - 8 tables
+9. **[09_FINANCE_PAYMENT.md](database/09_FINANCE_PAYMENT.md)** - 10 tables
    - universities, faculties, departments, programs
 
 2. **[02_ACADEMIC_PERIODS.md](database/02_ACADEMIC_PERIODS.md)** - 2 tables

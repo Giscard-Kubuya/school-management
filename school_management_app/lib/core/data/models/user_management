@@ -1,0 +1,163 @@
+import 'package:flutter/foundation.dart';
+import 'base_model.dart';
+
+enum UserRole {
+  student,
+  teacher,
+  manager,
+  admin,
+}
+
+@immutable
+class User extends BaseModel {
+  final String id;
+  final String email;
+  final String? firstName;
+  final String? lastName;
+  final UserRole role;
+  final String? phoneNumber;
+  final String? profileImage;
+  final bool isActive;
+  final String? universityId;
+  final DateTime? lastLoginAt;
+  final String syncStatus;
+  final int syncVersion;
+  final bool isDirty;
+  final DateTime? lastSyncedAt;
+  final Map<String, dynamic>? conflictData;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  const User({
+    required this.id,
+    required this.email,
+    this.firstName,
+    this.lastName,
+    required this.role,
+    this.phoneNumber,
+    this.profileImage,
+    this.isActive = true,
+    this.universityId,
+    this.lastLoginAt,
+    this.syncStatus = 'synced',
+    this.syncVersion = 1,
+    this.isDirty = false,
+    this.lastSyncedAt,
+    this.conflictData,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  @override
+  List<Object?> get props => [
+        id,
+        email,
+        firstName,
+        lastName,
+        role,
+        phoneNumber,
+        profileImage,
+        isActive,
+        universityId,
+        lastLoginAt,
+        syncStatus,
+        syncVersion,
+        isDirty,
+        lastSyncedAt,
+        conflictData,
+        createdAt,
+        updatedAt,
+      ];
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] as String,
+      email: json['email'] as String,
+      firstName: json['firstName'] as String?,
+      lastName: json['lastName'] as String?,
+      role: UserRole.values.firstWhere(
+        (e) => e.toString() == 'UserRole.${json['role']}',
+        orElse: () => UserRole.student,
+      ),
+      phoneNumber: json['phoneNumber'] as String?,
+      profileImage: json['profileImage'] as String?,
+      isActive: json['isActive'] as bool? ?? true,
+      universityId: json['universityId'] as String?,
+      lastLoginAt: json['lastLoginAt'] != null 
+          ? DateTime.parse(json['lastLoginAt'] as String) 
+          : null,
+      syncStatus: json['syncStatus'] as String? ?? 'synced',
+      syncVersion: json['syncVersion'] as int? ?? 1,
+      isDirty: json['isDirty'] as bool? ?? false,
+      lastSyncedAt: json['lastSyncedAt'] != null 
+          ? DateTime.parse(json['lastSyncedAt'] as String) 
+          : null,
+      conflictData: json['conflictData'] as Map<String, dynamic>?,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      if (firstName != null) 'firstName': firstName,
+      if (lastName != null) 'lastName': lastName,
+      'role': role.toString().split('.').last,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
+      if (profileImage != null) 'profileImage': profileImage,
+      'isActive': isActive,
+      if (universityId != null) 'universityId': universityId,
+      if (lastLoginAt != null) 'lastLoginAt': lastLoginAt!.toIso8601String(),
+      'syncStatus': syncStatus,
+      'syncVersion': syncVersion,
+      'isDirty': isDirty,
+      if (lastSyncedAt != null) 'lastSyncedAt': lastSyncedAt!.toIso8601String(),
+      if (conflictData != null) 'conflictData': conflictData,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
+  User copyWith({
+    String? id,
+    String? email,
+    String? firstName,
+    String? lastName,
+    UserRole? role,
+    String? phoneNumber,
+    String? profileImage,
+    bool? isActive,
+    String? universityId,
+    DateTime? lastLoginAt,
+    String? syncStatus,
+    int? syncVersion,
+    bool? isDirty,
+    DateTime? lastSyncedAt,
+    Map<String, dynamic>? conflictData,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      role: role ?? this.role,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      profileImage: profileImage ?? this.profileImage,
+      isActive: isActive ?? this.isActive,
+      universityId: universityId ?? this.universityId,
+      lastLoginAt: lastLoginAt ?? this.lastLoginAt,
+      syncStatus: syncStatus ?? this.syncStatus,
+      syncVersion: syncVersion ?? this.syncVersion,
+      isDirty: isDirty ?? this.isDirty,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      conflictData: conflictData ?? this.conflictData,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+}

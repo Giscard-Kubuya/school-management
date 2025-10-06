@@ -1,6 +1,7 @@
 # Finance & Payment System Tables - Complete Schema
 
 ## Tables in this file:
+
 1. financial_accounts
 2. transactions
 3. transaction_categories
@@ -17,6 +18,7 @@
 ## 1. financial_accounts
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE financial_accounts (
   id VARCHAR(36) PRIMARY KEY,
@@ -69,6 +71,7 @@ CREATE TABLE financial_accounts (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE financial_accounts (
   id TEXT PRIMARY KEY,
@@ -110,6 +113,7 @@ CREATE INDEX idx_financial_accounts_status ON financial_accounts(account_status)
 ## 2. transactions
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE transactions (
   id VARCHAR(36) PRIMARY KEY,
@@ -184,6 +188,7 @@ CREATE TABLE transactions (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE transactions (
   id TEXT PRIMARY KEY,
@@ -240,6 +245,7 @@ CREATE INDEX idx_transactions_date ON transactions(created_at);
 ## 3. transaction_categories
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE transaction_categories (
   id VARCHAR(36) PRIMARY KEY,
@@ -277,6 +283,7 @@ CREATE TABLE transaction_categories (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE transaction_categories (
   id TEXT PRIMARY KEY,
@@ -311,6 +318,7 @@ CREATE INDEX idx_transaction_categories_type ON transaction_categories(category_
 ## 4. payment_methods
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE payment_methods (
   id VARCHAR(36) PRIMARY KEY,
@@ -355,6 +363,7 @@ CREATE TABLE payment_methods (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE payment_methods (
   id TEXT PRIMARY KEY,
@@ -394,6 +403,7 @@ CREATE INDEX idx_payment_methods_type ON payment_methods(method_type);
 ## 5. document_payments
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE document_payments (
   id VARCHAR(36) PRIMARY KEY,
@@ -443,6 +453,7 @@ CREATE TABLE document_payments (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE document_payments (
   id TEXT PRIMARY KEY,
@@ -485,6 +496,7 @@ CREATE INDEX idx_document_payments_status ON document_payments(payment_status);
 ## 6. tuition_fees
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE tuition_fees (
   id VARCHAR(36) PRIMARY KEY,
@@ -545,6 +557,7 @@ CREATE TABLE tuition_fees (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE tuition_fees (
   id TEXT PRIMARY KEY,
@@ -594,6 +607,7 @@ CREATE INDEX idx_tuition_fees_status ON tuition_fees(payment_status);
 ## 7. fee_payments
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE fee_payments (
   id VARCHAR(36) PRIMARY KEY,
@@ -630,6 +644,7 @@ CREATE TABLE fee_payments (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE fee_payments (
   id TEXT PRIMARY KEY,
@@ -663,6 +678,7 @@ CREATE INDEX idx_fee_payments_transaction ON fee_payments(transaction_id);
 ## 8. payment_plans
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE payment_plans (
   id VARCHAR(36) PRIMARY KEY,
@@ -707,6 +723,7 @@ CREATE TABLE payment_plans (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE payment_plans (
   id TEXT PRIMARY KEY,
@@ -747,6 +764,7 @@ CREATE INDEX idx_payment_plans_status ON payment_plans(status);
 ## 9. financial_history
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE financial_history (
   id VARCHAR(36) PRIMARY KEY,
@@ -786,6 +804,7 @@ CREATE TABLE financial_history (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE financial_history (
   id TEXT PRIMARY KEY,
@@ -821,6 +840,7 @@ CREATE INDEX idx_financial_history_date ON financial_history(created_at);
 ## 10. withdrawal_requests
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE withdrawal_requests (
   id VARCHAR(36) PRIMARY KEY,
@@ -875,6 +895,7 @@ CREATE TABLE withdrawal_requests (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE withdrawal_requests (
   id TEXT PRIMARY KEY,

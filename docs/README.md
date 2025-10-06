@@ -32,14 +32,14 @@ A comprehensive school management system supporting three user roles:
 
 1. **[DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)** ⭐ START HERE
    - Complete database design overview
-   - **All 38 tables fully documented** ✅
+   - **All 48 tables fully documented** ✅
    - **Organized in [database/](database/) folder**
    - SQL for both Flutter (SQLite) and API (MySQL)
    - Foreign key constraints & indexes
    - **See [database/README.md](database/README.md) for complete index**
 
 2. **[DATABASE_COMPLETION_SUMMARY.md](DATABASE_COMPLETION_SUMMARY.md)** 📊 Schema Summary
-   - Complete overview of all 38 tables
+   - Complete overview of all 48 tables
    - Implementation status
    - Quick reference guide
 
