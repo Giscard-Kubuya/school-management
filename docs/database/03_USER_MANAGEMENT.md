@@ -1,6 +1,7 @@
 # User Management Tables - Complete Schema
 
 ## Tables in this file:
+
 1. users
 2. administrators
 3. teachers
@@ -12,6 +13,7 @@
 ## 1. users
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE users (
   id VARCHAR(36) PRIMARY KEY,
@@ -63,6 +65,7 @@ CREATE TABLE users (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE users (
   id TEXT PRIMARY KEY,
@@ -108,6 +111,7 @@ CREATE INDEX idx_users_approved ON users(is_approved);
 ## 2. administrators
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE administrators (
   id VARCHAR(36) PRIMARY KEY,
@@ -147,6 +151,7 @@ CREATE TABLE administrators (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE administrators (
   id TEXT PRIMARY KEY,
@@ -183,6 +188,7 @@ CREATE INDEX idx_administrators_level ON administrators(admin_level);
 ## 3. teachers
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE teachers (
   id VARCHAR(36) PRIMARY KEY,
@@ -227,6 +233,7 @@ CREATE TABLE teachers (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE teachers (
   id TEXT PRIMARY KEY,
@@ -266,6 +273,7 @@ CREATE INDEX idx_teachers_employee_id ON teachers(employee_id);
 ## 4. students
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE students (
   id VARCHAR(36) PRIMARY KEY,
@@ -320,6 +328,7 @@ CREATE TABLE students (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE students (
   id TEXT PRIMARY KEY,
@@ -367,6 +376,7 @@ CREATE INDEX idx_students_status ON students(academic_status);
 ## 5. user_sessions
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE user_sessions (
   id VARCHAR(36) PRIMARY KEY,
@@ -408,6 +418,7 @@ CREATE TABLE user_sessions (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE user_sessions (
   id TEXT PRIMARY KEY,

@@ -1,6 +1,7 @@
 # Communication & Document Tables - Complete Schema
 
 ## Tables in this file:
+
 1. messages
 2. announcements
 3. notifications
@@ -15,6 +16,7 @@
 ## 1. messages
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE messages (
   id VARCHAR(36) PRIMARY KEY,
@@ -61,6 +63,7 @@ CREATE TABLE messages (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE messages (
   id TEXT PRIMARY KEY,
@@ -101,6 +104,7 @@ CREATE INDEX idx_messages_read ON messages(is_read);
 ## 2. announcements
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE announcements (
   id VARCHAR(36) PRIMARY KEY,
@@ -150,6 +154,7 @@ CREATE TABLE announcements (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE announcements (
   id TEXT PRIMARY KEY,
@@ -193,6 +198,7 @@ CREATE INDEX idx_announcements_pinned ON announcements(is_pinned);
 ## 3. notifications
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE notifications (
   id VARCHAR(36) PRIMARY KEY,
@@ -234,6 +240,7 @@ CREATE TABLE notifications (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE notifications (
   id TEXT PRIMARY KEY,
@@ -270,6 +277,7 @@ CREATE INDEX idx_notifications_read ON notifications(is_read);
 ## 4. message_attachments
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE message_attachments (
   id VARCHAR(36) PRIMARY KEY,
@@ -300,6 +308,7 @@ CREATE TABLE message_attachments (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE message_attachments (
   id TEXT PRIMARY KEY,
@@ -330,6 +339,7 @@ CREATE INDEX idx_message_attachments_message ON message_attachments(message_id);
 ## 5. document_folders
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE document_folders (
   id VARCHAR(36) PRIMARY KEY,
@@ -370,6 +380,7 @@ CREATE TABLE document_folders (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE document_folders (
   id TEXT PRIMARY KEY,
@@ -406,6 +417,7 @@ CREATE INDEX idx_document_folders_course ON document_folders(course_offering_id)
 ## 6. documents
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE documents (
   id VARCHAR(36) PRIMARY KEY,
@@ -452,6 +464,7 @@ CREATE TABLE documents (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE documents (
   id TEXT PRIMARY KEY,
@@ -493,6 +506,7 @@ CREATE INDEX idx_documents_type ON documents(document_type);
 ## 7. course_materials
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE course_materials (
   id VARCHAR(36) PRIMARY KEY,
@@ -530,6 +544,7 @@ CREATE TABLE course_materials (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE course_materials (
   id TEXT PRIMARY KEY,
@@ -564,6 +579,7 @@ CREATE INDEX idx_course_materials_week ON course_materials(week_number);
 ## 8. document_downloads
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE document_downloads (
   id VARCHAR(36) PRIMARY KEY,
@@ -598,6 +614,7 @@ CREATE TABLE document_downloads (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE document_downloads (
   id TEXT PRIMARY KEY,
@@ -634,6 +651,7 @@ CREATE INDEX idx_document_downloads_user ON document_downloads(user_id);
 All **38 tables** have been created with both **MySQL (Laravel)** and **SQLite (Flutter)** versions:
 
 ### Summary by Category:
+
 1. **Institutional Tables (4)**: universities, faculties, departments, programs
 2. **Academic Periods (2)**: academic_years, semesters
 3. **User Management (5)**: users, administrators, teachers, students, user_sessions

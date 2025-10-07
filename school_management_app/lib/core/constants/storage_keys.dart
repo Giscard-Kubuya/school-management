@@ -25,4 +25,11 @@ class StorageKeys {
   // University
   static const String selectedUniversityId = 'selected_university_id';
   static const String universityData = 'university_data';
+  
+  // User
+  static const String userRole = 'user_role';
+  static const String userEmail = 'user_email';
+  
+  // Device Configuration
+  static const String isDeviceConfigured = 'is_device_configured';
 }

@@ -29,11 +29,10 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
       return;
     }
     
-    // Navigate to verification page with university and role info
-    context.push('/verification', extra: {
+    // Navigate to device verification page with university and role info
+    context.push('/device-verification', extra: {
       'universityId': widget.universityId,
-      'universityName': widget.universityName,
-      'role': _selectedRole,
+      'role': _selectedRole.toString().split('.').last, // Convert enum to string
     });
   }
 

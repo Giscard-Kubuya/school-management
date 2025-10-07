@@ -1,6 +1,7 @@
 # Institutional Tables - Complete Schema
 
 ## Tables in this file:
+
 1. universities
 2. faculties
 3. departments
@@ -13,6 +14,7 @@
 ## 1. universities
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE universities (
   id VARCHAR(36) PRIMARY KEY,
@@ -57,6 +59,7 @@ CREATE TABLE universities (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE universities (
   id TEXT PRIMARY KEY,
@@ -94,6 +97,7 @@ CREATE INDEX idx_universities_active ON universities(is_active);
 ## 2. faculties
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE faculties (
   id VARCHAR(36) PRIMARY KEY,
@@ -134,6 +138,7 @@ CREATE TABLE faculties (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE faculties (
   id TEXT PRIMARY KEY,
@@ -169,6 +174,7 @@ CREATE INDEX idx_faculties_university ON faculties(university_id);
 ## 3. departments
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE departments (
   id VARCHAR(36) PRIMARY KEY,
@@ -209,6 +215,7 @@ CREATE TABLE departments (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE departments (
   id TEXT PRIMARY KEY,
@@ -244,6 +251,7 @@ CREATE INDEX idx_departments_university ON departments(university_id);
 ## 4. programs
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE programs (
   id VARCHAR(36) PRIMARY KEY,
@@ -288,6 +296,7 @@ CREATE TABLE programs (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE programs (
   id TEXT PRIMARY KEY,

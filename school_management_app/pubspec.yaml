@@ -2,7 +2,7 @@ name: school_management_app
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -33,42 +33,50 @@ dependencies:
 
   # UI Components
   cupertino_icons: ^1.0.8
-  
+
   # State Management
   flutter_bloc: ^8.1.6
   equatable: ^2.0.7
-  
+
   # Dependency Injection
   get_it: ^7.7.0
   injectable: ^2.4.2
-  
+
   # Navigation
   go_router: ^14.2.7
-  
+
   # Network
   dio: ^5.7.0
   connectivity_plus: ^6.0.5
+
+  # Device Information
+  device_info_plus: ^9.1.2
+  package_info_plus: 9.0.0
   pretty_dio_logger: ^1.4.0
-  
+
   # Local Storage
   sqflite: ^2.3.3+1
+  sqflite_common_ffi: ^2.3.3+1
+  path_provider: ^2.1.4
+  path: ^1.9.1
+
+  # For web fallback
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   shared_preferences: ^2.3.2
   flutter_secure_storage: ^9.2.2
-  path_provider: ^2.1.4
-  
+
   # Code Generation
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
-  
+
   # UI/UX
   google_fonts: ^6.2.1
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
   lottie: ^3.1.2
   flutter_svg: ^2.0.10+1
-  
+
   # Utilities
   intl: ^0.19.0
   permission_handler: ^11.3.1
@@ -78,10 +86,10 @@ dependencies:
   uuid: ^4.5.0
   logger: ^2.4.0
   rxdart: ^0.28.0
-  
+  dartz: ^0.10.1
+
   # Date & Time
   timeago: ^3.7.0
-  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -92,11 +100,11 @@ dev_dependencies:
   freezed: ^2.5.7
   json_serializable: ^6.8.0
   injectable_generator: ^2.6.2
-  
+
   # Testing
   mockito: ^5.4.4
   bloc_test: ^9.1.7
-  
+
   # Linting
   flutter_lints: ^5.0.0
 
@@ -105,7 +113,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

@@ -1,6 +1,7 @@
 # Academic Period Tables - Complete Schema
 
 ## Tables in this file:
+
 1. academic_years
 2. semesters
 
@@ -9,6 +10,7 @@
 ## 1. academic_years
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE academic_years (
   id VARCHAR(36) PRIMARY KEY,
@@ -42,6 +44,7 @@ CREATE TABLE academic_years (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE academic_years (
   id TEXT PRIMARY KEY,
@@ -73,6 +76,7 @@ CREATE INDEX idx_academic_years_current ON academic_years(is_current);
 ## 2. semesters
 
 ### MySQL (Laravel)
+
 ```sql
 CREATE TABLE semesters (
   id VARCHAR(36) PRIMARY KEY,
@@ -116,6 +120,7 @@ CREATE TABLE semesters (
 ```
 
 ### SQLite (Flutter)
+
 ```sql
 CREATE TABLE semesters (
   id TEXT PRIMARY KEY,

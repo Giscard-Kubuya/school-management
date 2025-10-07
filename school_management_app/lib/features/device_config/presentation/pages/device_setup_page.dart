@@ -63,26 +63,22 @@ class _DeviceSetupPageState extends State<DeviceSetupPage> {
 
     setState(() => _isLoading = true);
 
-    // Simulate device registration request
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        setState(() => _isLoading = false);
+    // Get selected university
+    final selectedUni = _universities.firstWhere(
+      (uni) => uni['id'] == _selectedUniversity,
+    );
 
-        // Get selected university
-        final selectedUni = _universities.firstWhere(
-          (uni) => uni['id'] == _selectedUniversity,
-        );
-
-        // Navigate to role selection page with university info
-        context.push(
-          '/role-selection',
-          extra: {
-            'universityName': selectedUni['name'],
-            'universityId': selectedUni['id'],
-          },
-        );
-      }
-    });
+    // Navigate to role selection page
+    if (mounted) {
+      setState(() => _isLoading = false);
+      context.push(
+        '/role-selection',
+        extra: {
+          'universityId': selectedUni['id'],
+          'universityName': selectedUni['name'],
+        },
+      );
+    }
   }
 
   @override
