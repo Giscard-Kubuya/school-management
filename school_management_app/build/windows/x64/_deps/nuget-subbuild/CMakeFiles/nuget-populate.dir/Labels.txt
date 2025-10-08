@@ -1,0 +1,15 @@
+# Target labels
+ nuget-populate
+# Source files and their labels
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/nuget-populate
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/b1637c2f67f41b7f166f0784ac69a139/nuget-populate.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/4e5a5f7407c1d6e6b612320a57715e14/nuget-populate-complete.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-build.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-configure.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-copyfile.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-download.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-install.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-mkdir.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-patch.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-test.rule
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/7b61d76432b1ec7dd4879d70217c9a51/nuget-populate-update.rule

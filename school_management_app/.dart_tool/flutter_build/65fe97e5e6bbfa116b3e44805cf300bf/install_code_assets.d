@@ -1,0 +1,1 @@
+ D:\\kubuya\\personal\\school-management-new\\school_management_app\\.dart_tool\\flutter_build\\65fe97e5e6bbfa116b3e44805cf300bf\\native_assets.json: 

@@ -1,0 +1,3 @@
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/nuget-populate.dir
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/ALL_BUILD.dir
+D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/_deps/nuget-subbuild/CMakeFiles/ZERO_CHECK.dir

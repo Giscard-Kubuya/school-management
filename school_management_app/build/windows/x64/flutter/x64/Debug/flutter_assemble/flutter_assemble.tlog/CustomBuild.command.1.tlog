@@ -1,0 +1,28 @@
+^D:\KUBUYA\PERSONAL\SCHOOL-MANAGEMENT-NEW\SCHOOL_MANAGEMENT_APP\BUILD\WINDOWS\X64\CMAKEFILES\1BD517887504D871D0C0808A8AD8EEA9\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=C:\dev\flutter PROJECT_DIR=D:\kubuya\personal\school-management-new\school_management_app FLUTTER_ROOT=C:\dev\flutter FLUTTER_EPHEMERAL_DIR=D:\kubuya\personal\school-management-new\school_management_app\windows\flutter\ephemeral PROJECT_DIR=D:\kubuya\personal\school-management-new\school_management_app FLUTTER_TARGET=D:\kubuya\personal\school-management-new\school_management_app\lib\main.dart DART_DEFINES=RkxVVFRFUl9WRVJTSU9OPTMuMzUuNQ==,RkxVVFRFUl9DSEFOTkVMPXN0YWJsZQ==,RkxVVFRFUl9HSVRfVVJMPWh0dHBzOi8vZ2l0aHViLmNvbS9mbHV0dGVyL2ZsdXR0ZXIuZ2l0,RkxVVFRFUl9GUkFNRVdPUktfUkVWSVNJT049YWM0ZTc5OWQyMw==,RkxVVFRFUl9FTkdJTkVfUkVWSVNJT049ZDNkNDVkY2YyNQ==,RkxVVFRFUl9EQVJUX1ZFUlNJT049My45LjI= DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false PACKAGE_CONFIG=D:\kubuya\personal\school-management-new\school_management_app\.dart_tool\package_config.json C:/dev/flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\KUBUYA\PERSONAL\SCHOOL-MANAGEMENT-NEW\SCHOOL_MANAGEMENT_APP\BUILD\WINDOWS\X64\CMAKEFILES\62040AAB6FEE768ABE4200A18A6C6843\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\KUBUYA\PERSONAL\SCHOOL-MANAGEMENT-NEW\SCHOOL_MANAGEMENT_APP\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SD:/kubuya/personal/school-management-new/school_management_app/windows -BD:/kubuya/personal/school-management-new/school_management_app/build/windows/x64 --check-stamp-file D:/kubuya/personal/school-management-new/school_management_app/build/windows/x64/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

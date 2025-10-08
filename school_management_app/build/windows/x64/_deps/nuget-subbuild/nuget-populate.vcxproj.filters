@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-copyfile.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\7b61d76432b1ec7dd4879d70217c9a51\nuget-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\4e5a5f7407c1d6e6b612320a57715e14\nuget-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\b1637c2f67f41b7f166f0784ac69a139\nuget-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\kubuya\personal\school-management-new\school_management_app\build\windows\x64\_deps\nuget-subbuild\CMakeFiles\nuget-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{010494BF-9E56-3716-85FA-50CD1406A9A0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
