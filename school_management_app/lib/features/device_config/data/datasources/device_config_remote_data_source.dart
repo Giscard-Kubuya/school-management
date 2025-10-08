@@ -8,16 +8,27 @@ abstract class DeviceConfigRemoteDataSource {
   Future<List<Map<String, dynamic>>> getUniversities();
   Future<Map<String, dynamic>> verifyDevice(String email, String code);
   Future<Map<String, dynamic>> syncData(String universityId, String role);
+  
+  /// Sends a verification code to the provided email for device registration
+  ///
+  /// [email] - The email address to send the verification code to
+  /// [deviceInfo] - Information about the device being registered
+  Future<Map<String, dynamic>> sendVerificationCode({
+    required String email,
+    required Map<String, dynamic> deviceInfo,
+  });
 }
 
 class DeviceConfigRemoteDataSourceImpl implements DeviceConfigRemoteDataSource {
   final ApiClient _apiClient;
 
-  DeviceConfigRemoteDataSourceImpl({required ApiClient apiClient}) 
-      : _apiClient = apiClient;
+  DeviceConfigRemoteDataSourceImpl({required ApiClient apiClient})
+    : _apiClient = apiClient;
 
   @override
-  Future<Map<String, dynamic>> registerDevice(Map<String, dynamic> deviceInfo) async {
+  Future<Map<String, dynamic>> registerDevice(
+    Map<String, dynamic> deviceInfo,
+  ) async {
     try {
       final response = await _apiClient.post(
         '${AppConstants.baseUrl}/devices/register',
@@ -61,14 +72,35 @@ class DeviceConfigRemoteDataSourceImpl implements DeviceConfigRemoteDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> syncData(String universityId, String role) async {
+  Future<Map<String, dynamic>> sendVerificationCode({
+    required String email,
+    required Map<String, dynamic> deviceInfo,
+  }) async {
+    try {
+      final response = await _apiClient.post(
+        '${AppConstants.baseUrl}/devices/send-verification-code',
+        data: {
+          'email': email,
+          'device': deviceInfo,
+        },
+      );
+      return response;
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: 'Failed to send verification code');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> syncData(
+    String universityId,
+    String role,
+  ) async {
     try {
       final response = await _apiClient.post(
         '${AppConstants.baseUrl}${ApiConstants.sync}',
-        data: {
-          'university_id': universityId, 
-          'role': role,
-        },
+        data: {'university_id': universityId, 'role': role},
       );
       return response;
     } on ServerException catch (e) {

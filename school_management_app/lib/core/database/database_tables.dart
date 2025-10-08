@@ -66,6 +66,8 @@ class DatabaseTables {
   // Communication tables
   static const String messages = 'messages';
   static const String messageRecipients = 'message_recipients';
+  static const String messageThreads = 'message_threads';
+  static const String messageThreadMembers = 'message_thread_members';
   static const String messageAttachments = 'message_attachments';
   static const String announcements = 'announcements';
   static const String announcementRecipients = 'announcement_recipients';

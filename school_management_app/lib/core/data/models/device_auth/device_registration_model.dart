@@ -27,10 +27,16 @@ class DeviceRegistration extends BaseModel {
   final bool isDirty;
   final DateTime? lastSyncedAt;
   final Map<String, dynamic>? conflictData;
+  final String verificationStatus; // 'pending', 'verified', 'rejected'
+  final String? verificationCode;
+  final DateTime? verificationExpiresAt;
   final DateTime createdAt;
   final DateTime updatedAt;
 
   const DeviceRegistration({
+    this.verificationStatus = 'pending',
+    this.verificationCode,
+    this.verificationExpiresAt,
     required this.id,
     required this.universityId,
     this.userId,
@@ -62,6 +68,11 @@ class DeviceRegistration extends BaseModel {
   factory DeviceRegistration.fromJson(Map<String, dynamic> json) {
     return DeviceRegistration(
       id: json['id'] as String,
+      verificationStatus: json['verification_status'] as String? ?? 'pending',
+      verificationCode: json['verification_code'] as String?,
+      verificationExpiresAt: json['verification_expires_at'] != null
+          ? DateTime.parse(json['verification_expires_at'] as String)
+          : null,
       universityId: json['university_id'] as String,
       userId: json['user_id'] as String?,
       deviceUuid: json['device_uuid'] as String,

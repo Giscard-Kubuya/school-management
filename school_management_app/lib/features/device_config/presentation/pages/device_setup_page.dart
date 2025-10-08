@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:school_management_app/core/theme/app_colors.dart';
+import 'package:school_management_app/core/usecases/usecase.dart';
+import 'package:school_management_app/di/injection_container.dart';
+import 'package:school_management_app/features/device_config/domain/entities/university.dart';
+import 'package:school_management_app/features/device_config/domain/usecases/get_universities.dart';
 
 class DeviceSetupPage extends StatefulWidget {
   const DeviceSetupPage({super.key});
@@ -11,24 +15,39 @@ class DeviceSetupPage extends StatefulWidget {
 
 class _DeviceSetupPageState extends State<DeviceSetupPage> {
   final _searchController = TextEditingController();
-  String? _selectedUniversity;
-  bool _isLoading = false;
-
-  // Mock universities data
-  final List<Map<String, String>> _universities = [
-    {'id': '1', 'name': 'Harvard University', 'country': 'United States'},
-    {'id': '2', 'name': 'Oxford University', 'country': 'United Kingdom'},
-    {'id': '3', 'name': 'MIT', 'country': 'United States'},
-    {'id': '4', 'name': 'Stanford University', 'country': 'United States'},
-    {'id': '5', 'name': 'Cambridge University', 'country': 'United Kingdom'},
-  ];
-
-  List<Map<String, String>> _filteredUniversities = [];
+  final GetUniversities _getUniversities = sl<GetUniversities>();
+  List<University> _universities = [];
+  List<University> _filteredUniversities = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+  String? _selectedUniversityId;
 
   @override
   void initState() {
     super.initState();
-    _filteredUniversities = _universities;
+    _fetchUniversities();
+  }
+
+  Future<void> _fetchUniversities() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final result = await _getUniversities(NoParams());
+
+    setState(() {
+      _isLoading = false;
+      result.fold(
+        (failure) {
+          _errorMessage = failure.message;
+        },
+        (universities) {
+          _universities = universities;
+          _filteredUniversities = List.from(_universities);
+        },
+      );
+    });
   }
 
   @override
@@ -40,13 +59,14 @@ class _DeviceSetupPageState extends State<DeviceSetupPage> {
   void _filterUniversities(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredUniversities = _universities;
+        _filteredUniversities = List.from(_universities);
       } else {
         _filteredUniversities = _universities
             .where(
               (uni) =>
-                  uni['name']!.toLowerCase().contains(query.toLowerCase()) ||
-                  uni['country']!.toLowerCase().contains(query.toLowerCase()),
+                  uni.name.toLowerCase().contains(query.toLowerCase()) ||
+                  (uni.country?.toLowerCase().contains(query.toLowerCase()) ??
+                      false),
             )
             .toList();
       }
@@ -54,7 +74,7 @@ class _DeviceSetupPageState extends State<DeviceSetupPage> {
   }
 
   void _handleContinue() {
-    if (_selectedUniversity == null) {
+    if (_selectedUniversityId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select your university')),
       );
@@ -65,7 +85,7 @@ class _DeviceSetupPageState extends State<DeviceSetupPage> {
 
     // Get selected university
     final selectedUni = _universities.firstWhere(
-      (uni) => uni['id'] == _selectedUniversity,
+      (uni) => uni.id == _selectedUniversityId,
     );
 
     // Navigate to role selection page
@@ -74,8 +94,8 @@ class _DeviceSetupPageState extends State<DeviceSetupPage> {
       context.push(
         '/role-selection',
         extra: {
-          'universityId': selectedUni['id'],
-          'universityName': selectedUni['name'],
+          'universityId': selectedUni.id,
+          'universityName': selectedUni.name,
         },
       );
     }
@@ -128,61 +148,109 @@ class _DeviceSetupPageState extends State<DeviceSetupPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Universities List
-                  Expanded(
-                    child: _filteredUniversities.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'No universities found',
-                              style: TextStyle(color: AppColors.textSecondary),
+                  // Loading state
+                  if (_isLoading)
+                    const Expanded(
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  // Error state
+                  else if (_errorMessage != null)
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 48,
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: _filteredUniversities.length,
-                            itemBuilder: (context, index) {
-                              final university = _filteredUniversities[index];
-                              final isSelected =
-                                  _selectedUniversity == university['id'];
-
-                              return Card(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: isSelected
-                                        ? AppColors.primary
-                                        : AppColors.primaryContainer,
-                                    child: Icon(
-                                      Icons.school,
-                                      color: isSelected
-                                          ? Colors.white
-                                          : AppColors.primary,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    university['name']!,
-                                    style: TextStyle(
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                  ),
-                                  subtitle: Text(university['country']!),
-                                  trailing: isSelected
-                                      ? const Icon(
-                                          Icons.check_circle,
-                                          color: AppColors.success,
-                                        )
-                                      : null,
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedUniversity = university['id'];
-                                    });
-                                  },
-                                ),
-                              );
-                            },
+                            const SizedBox(height: 16),
+                            Text(
+                              'Failed to load universities',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _errorMessage!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: _fetchUniversities,
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  // Empty state
+                  else if (_filteredUniversities.isEmpty)
+                    const Expanded(
+                      child: Center(
+                        child: Text(
+                          'No universities found',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textSecondary,
                           ),
-                  ),
+                        ),
+                      ),
+                    )
+                  // Universities List
+                  else
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _filteredUniversities.length,
+                        itemBuilder: (context, index) {
+                          final university = _filteredUniversities[index];
+                          final isSelected =
+                              _selectedUniversityId == university.id;
+
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: isSelected
+                                    ? AppColors.primary
+                                    : AppColors.primaryContainer,
+                                child: Icon(
+                                  Icons.school,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppColors.primary,
+                                ),
+                              ),
+                              title: Text(
+                                university.name,
+                                style: TextStyle(
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                              subtitle: university.country != null
+                                  ? Text(university.country!)
+                                  : null,
+                              trailing: isSelected
+                                  ? const Icon(
+                                      Icons.check_circle,
+                                      color: AppColors.success,
+                                    )
+                                  : null,
+                              onTap: () {
+                                setState(() {
+                                  _selectedUniversityId = university.id;
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
 
                   const SizedBox(height: 16),
 

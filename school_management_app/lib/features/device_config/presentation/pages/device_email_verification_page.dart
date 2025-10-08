@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:school_management_app/core/utils/logger.dart';
 import 'package:school_management_app/features/device_config/data/datasources/device_info_service.dart';
+import 'package:school_management_app/features/device_config/domain/entities/device_info.dart';
+import 'package:school_management_app/features/device_config/domain/repositories/device_config_repository.dart';
 
 class DeviceEmailVerificationPage extends StatefulWidget {
   final String universityId;
@@ -46,47 +49,145 @@ class _DeviceEmailVerificationPageState
     }
   }
 
+  // Validates device info and returns null if valid, error message otherwise
+  String? _validateDeviceInfo(Map<String, dynamic> deviceInfo) {
+    final requiredFields = {
+      'deviceId': 'Device ID',
+      'osName': 'Operating System',
+      'osVersion': 'OS Version',
+      'appVersion': 'App Version',
+    };
+
+    // Check for missing required fields
+    for (final entry in requiredFields.entries) {
+      final value = deviceInfo[entry.key];
+      if (value == null || value.toString().trim().isEmpty) {
+        return '${entry.value} is required';
+      }
+    }
+
+    // Validate device ID format (UUID)
+    final deviceId = deviceInfo['deviceId']?.toString() ?? '';
+    if (deviceId.isEmpty) {
+      return 'Device ID is required';
+    }
+
+    return null;
+  }
+
   Future<void> _sendVerificationCode() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() || _isLoading) return;
 
     setState(() => _isLoading = true);
 
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final email = _emailController.text.trim();
 
-    if (!mounted) return;
+      // Validate email format
+      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+        throw Exception('Please enter a valid email address');
+      }
 
-    // Mock successful verification code sending
-    final mockVerificationCode = '123456'; // Mock verification code
+      // Validate device info
+      final validationError = _validateDeviceInfo(_deviceInfo);
+      if (validationError != null) {
+        throw Exception(validationError);
+      }
 
-    // Store the mock code in the device info for verification
-    final deviceInfoWithCode = Map<String, String>.from(_deviceInfo);
-    deviceInfoWithCode['verificationCode'] = mockVerificationCode;
+      // Create DeviceInfo entity from the raw device info with proper fallbacks
+      final deviceInfo = DeviceInfo(
+        deviceId: _deviceInfo['deviceId']?.toString().trim() ?? '',
+        deviceName:
+            _deviceInfo['deviceName']?.toString().trim() ?? 'Unknown Device',
+        osName: _deviceInfo['osName']?.toString().trim() ?? 'Unknown OS',
+        osVersion: _deviceInfo['osVersion']?.toString().trim() ?? '1.0.0',
+        appVersion: _deviceInfo['appVersion']?.toString().trim() ?? '1.0.0',
+        model: _deviceInfo['model']?.toString().trim(),
+        manufacturer: _deviceInfo['manufacturer']?.toString().trim(),
+        appBuildNumber:
+            _deviceInfo['appVersion']?.toString().split('+').lastOrNull ?? '1',
+        appIdentifier:
+            _deviceInfo['app_identifier']?.toString() ??
+            'school_management_app',
+        universityId: widget.universityId,
+      );
 
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Verification code sent successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
+      // Debug print to verify the device info
+      'Device Info: ${deviceInfo.toJson()}'.logInfo();
 
-    // Navigate to verification code page
-    if (mounted) {
-      context.pushNamed(
-        'verification-code',
-        extra: {
-          'email': _emailController.text,
-          'deviceInfo': deviceInfoWithCode,
-          'universityId': widget.universityId,
-          'role': widget.role,
-          'verificationCode':
-              mockVerificationCode, // Pass the code for verification
+      // Log the device info being sent
+      'Sending device info: ${deviceInfo.toJson()}'.logInfo();
+
+      // Get repository from context
+      final repository = RepositoryProvider.of<DeviceConfigRepository>(context);
+
+      // Call repository to send verification code
+      final result = await repository.sendVerificationCode(
+        email: email,
+        deviceInfo: deviceInfo,
+      );
+
+      if (!mounted) return;
+
+      result.fold(
+        (failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(failure.message),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
+        (response) {
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Verification code sent successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Navigate to verification code page
+          if (mounted) {
+            // Ensure we have the device UUID
+            final deviceUuid = _deviceInfo['deviceId'] ?? response['device_id'];
+            if (deviceUuid == null) {
+              throw Exception('Device UUID is required');
+            }
+            
+            // Navigate to verification code page with all required parameters
+            context.pushNamed(
+              'verification-code',
+              extra: {
+                'email': email,
+                'deviceInfo': {
+                  ..._deviceInfo,
+                  'uuid': deviceUuid, // Make sure this is included
+                  'verificationCode': response['verification_code'],
+                },
+                'universityId': widget.universityId,
+                'role': widget.role,
+                'verificationCode': response['verification_code'],
+                'deviceId': response['device_id'],
+              },
+            );
+          }
         },
       );
+    } catch (e) {
+      print(e);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to send verification code: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
-
-    setState(() => _isLoading = false);
   }
 
   @override

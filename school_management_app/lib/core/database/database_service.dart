@@ -10,7 +10,10 @@ abstract class DatabaseService {
   Future<void> close();
 
   /// Executes a raw SQL query
-  Future<List<Map<String, dynamic>>> rawQuery(String sql, [List<dynamic>? arguments]);
+  Future<List<Map<String, dynamic>>> rawQuery(
+    String sql, [
+    List<dynamic>? arguments,
+  ]);
 
   /// Inserts a row in the database
   Future<int> insert(String table, Map<String, dynamic> row);
@@ -39,11 +42,7 @@ abstract class DatabaseService {
   });
 
   /// Deletes a row from the database
-  Future<int> delete(
-    String table, {
-    String? where,
-    List<dynamic>? whereArgs,
-  });
+  Future<int> delete(String table, {String? where, List<dynamic>? whereArgs});
 
   /// Executes a batch of operations
   Future<void> batchWrite(Function(Batch) operations);

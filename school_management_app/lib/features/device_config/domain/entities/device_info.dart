@@ -6,6 +6,9 @@ class DeviceInfo {
   final String appVersion;
   final String? model;
   final String? manufacturer;
+  final String? appBuildNumber;
+  final String? appIdentifier;
+  final String? universityId;
 
   const DeviceInfo({
     required this.deviceId,
@@ -15,6 +18,9 @@ class DeviceInfo {
     required this.appVersion,
     this.model,
     this.manufacturer,
+    this.appBuildNumber,
+    this.appIdentifier,
+    this.universityId,
   });
 
   Map<String, dynamic> toJson() {
@@ -26,6 +32,9 @@ class DeviceInfo {
       'app_version': appVersion,
       'model': model,
       'manufacturer': manufacturer,
+      'app_build_number': appBuildNumber,
+      'app_identifier': appIdentifier,
+      'university_id': universityId,
     };
   }
 

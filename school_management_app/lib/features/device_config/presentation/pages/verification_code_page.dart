@@ -1,12 +1,16 @@
 import 'dart:async';
-
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:school_management_app/core/utils/logger.dart';
+import 'package:http/http.dart' as http;
+import 'package:school_management_app/core/network/api_client.dart';
+import 'package:school_management_app/features/device_config/data/models/verification_response_model.dart';
+import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 class VerificationCodePage extends StatefulWidget {
   final String email;
-  final Map<String, String> deviceInfo;
+  final Map<String, dynamic> deviceInfo;
   final String universityId;
   final String role;
 
@@ -33,11 +37,17 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
   bool _isVerified = false;
   int _resendCountdown = 30;
   Timer? _resendTimer;
+  String? _verificationCode;
+  String? _deviceId;
 
   @override
   void initState() {
     super.initState();
     _startResendTimer();
+    // Auto-fill with test code in debug mode
+    if (kDebugMode) {
+      _verificationCode = '123456'; // Default test code
+    }
   }
 
   @override
@@ -58,6 +68,7 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
       _resendCountdown = 30;
     });
 
+    _resendTimer?.cancel();
     _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_resendCountdown > 0) {
         setState(() => _resendCountdown--);
@@ -69,6 +80,8 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
   }
 
   Future<void> _verifyCode() async {
+    if (_isVerifying) return;
+
     final enteredCode = _codeControllers.map((c) => c.text).join();
 
     // Validate code length
@@ -86,70 +99,46 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
 
     setState(() => _isVerifying = true);
 
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (!mounted) return;
-
-    // Get the verification code from the device info (passed from previous screen)
-    final expectedCode = widget.deviceInfo['verificationCode'];
-
-    if (enteredCode == expectedCode) {
-      // Code matches, show success and proceed to data sync
-      if (mounted) {
-        setState(() {
-          _isVerified = true;
-        });
-
-        // After 2 seconds, navigate to data sync page
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            GoRouter.of(context).pushReplacementNamed(
-              'data-sync',
-              extra: {
-                'email': widget.email,
-                'deviceInfo': widget.deviceInfo,
-                'universityId': widget.universityId,
-                'role': widget.role,
-              },
-            );
-          }
-        });
-      }
-    } else {
-      // Invalid code
-      if (mounted) {
-        // Clear all input fields
-        for (var controller in _codeControllers) {
-          controller.clear();
-        }
-        // Focus back to first field
-        FocusScope.of(context).requestFocus(_focusNodes[0]);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid verification code. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-
-    if (mounted) {
-      setState(() => _isVerifying = false);
-    }
-  }
-
-  Future<void> _resendCode() async {
     try {
-      // Simulate API call delay
-      await Future.delayed(const Duration(seconds: 1));
+      final apiClient = ApiClient();
+      final response = await apiClient.post(
+        '/devices/verify',
+        data: {
+          'email': widget.email,
+          'device_uuid': widget.deviceInfo['uuid'],
+          'verification_code': enteredCode,
+        },
+      );
 
+      if (!mounted) return;
+
+      final verificationResponse = VerificationResponseModel.fromJson(response);
+      
+      if (verificationResponse.status == 'success') {
+        setState(() => _isVerified = true);
+        
+        // Navigate to data sync after a delay
+        if (mounted) {
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              context.go(
+                '/data-sync',
+                extra: {
+                  'email': widget.email,
+                  'deviceInfo': widget.deviceInfo,
+                  'universityId': widget.universityId,
+                  'role': widget.role,
+                },
+              );
+            }
+          });
+        }
+      } else {
+        throw Exception(verificationResponse.message);
+      }
+    } catch (e) {
       if (mounted) {
-        // Restart the resend timer
-        _startResendTimer();
-
-        // Clear any existing code
+        // Clear all input fields on error
         for (var controller in _codeControllers) {
           controller.clear();
         }
@@ -158,23 +147,80 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'A new verification code has been sent to your email.',
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      'Failed to resend code: $e'.logError();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to resend code. Please try again.'),
+          SnackBar(
+            content: Text('Verification failed: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isVerifying = false);
+      }
+    }
+  }
+
+  Future<void> _resendCode() async {
+    try {
+      setState(() => _isVerifying = true);
+
+      final apiClient = ApiClient();
+      final response = await apiClient.post(
+        '/devices/send-verification-code',
+        data: {
+          'email': widget.email,
+          'device': {
+            ...widget.deviceInfo,
+            'verification_code': _verificationCode,
+          },
+        },
+      );
+
+      if (!mounted) return;
+
+      final verificationResponse = VerificationResponseModel.fromJson(response);
+      
+      if (verificationResponse.status == 'success') {
+        _deviceId = verificationResponse.deviceId;
+        if (kDebugMode) {
+          print('Verification code sent. Device ID: $_deviceId');
+        }
+        _startResendTimer();
+        
+        if (mounted) {
+          // Clear any existing code
+          for (var controller in _codeControllers) {
+            controller.clear();
+          }
+          if (_focusNodes.isNotEmpty) {
+            FocusScope.of(context).requestFocus(_focusNodes[0]);
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(verificationResponse.message),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        throw Exception(verificationResponse.message);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to resend code: $e');
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to resend code: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isVerifying = false);
       }
     }
   }
@@ -186,6 +232,8 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
       } else {
         _verifyCode();
       }
+    } else if (value.isEmpty && index > 0) {
+      FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
     }
   }
 

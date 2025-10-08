@@ -10,6 +10,9 @@
 6. documents
 7. course_materials
 8. document_downloads
+9. message_recipients
+10. message_threads
+11. message_thread_members
 
 ---
 
@@ -640,6 +643,209 @@ CREATE TABLE document_downloads (
 CREATE INDEX idx_document_downloads_university ON document_downloads(university_id);
 CREATE INDEX idx_document_downloads_document ON document_downloads(document_id);
 CREATE INDEX idx_document_downloads_user ON document_downloads(user_id);
+
+---
+
+## 9. message_recipients
+
+Tracks message delivery and read status for each recipient.
+
+### MySQL (Laravel)
+
+```sql
+CREATE TABLE message_recipients (
+  id VARCHAR(36) PRIMARY KEY,
+  university_id VARCHAR(36) NOT NULL,
+  message_id VARCHAR(36) NOT NULL,
+  recipient_id VARCHAR(36) NOT NULL,
+  recipient_type ENUM('user', 'group', 'class', 'course') NOT NULL,
+  is_read BOOLEAN DEFAULT FALSE,
+  read_at TIMESTAMP NULL,
+  deleted_at TIMESTAMP NULL,
+  
+  -- Sync metadata
+  sync_status VARCHAR(20) DEFAULT 'synced',
+  sync_version INT DEFAULT 1,
+  is_dirty BOOLEAN DEFAULT FALSE,
+  last_synced_at TIMESTAMP NULL,
+  conflict_data JSON NULL,
+  
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  FOREIGN KEY (university_id) REFERENCES universities(id) ON DELETE CASCADE,
+  FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
+  FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE,
+  
+  INDEX idx_message_recipients_message (message_id),
+  INDEX idx_message_recipients_recipient (recipient_id, is_read)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### SQLite (Flutter)
+
+```sql
+CREATE TABLE message_recipients (
+  id TEXT PRIMARY KEY,
+  university_id TEXT NOT NULL,
+  message_id TEXT NOT NULL,
+  recipient_id TEXT NOT NULL,
+  recipient_type TEXT CHECK(recipient_type IN ('user', 'group', 'class', 'course')) NOT NULL,
+  is_read INTEGER DEFAULT 0,
+  read_at TEXT,
+  deleted_at TEXT,
+  sync_status TEXT DEFAULT 'synced',
+  sync_version INTEGER DEFAULT 1,
+  is_dirty INTEGER DEFAULT 0,
+  last_synced_at TEXT,
+  conflict_data TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (university_id) REFERENCES universities(id) ON DELETE CASCADE,
+  FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
+  FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_message_recipients_message ON message_recipients(message_id);
+CREATE INDEX idx_message_recipients_recipient ON message_recipients(recipient_id, is_read);
+```
+
+---
+
+## 10. message_threads
+
+Represents a conversation thread containing multiple messages.
+
+### MySQL (Laravel)
+
+```sql
+CREATE TABLE message_threads (
+  id VARCHAR(36) PRIMARY KEY,
+  university_id VARCHAR(36) NOT NULL,
+  title VARCHAR(255) NULL,
+  thread_type ENUM('direct', 'group', 'course', 'class', 'announcement') NOT NULL,
+  course_offering_id VARCHAR(36) NULL,
+  last_message_id VARCHAR(36) NULL,
+  last_message_at TIMESTAMP NULL,
+  created_by VARCHAR(36) NOT NULL,
+  
+  -- Sync metadata
+  sync_status VARCHAR(20) DEFAULT 'synced',
+  sync_version INT DEFAULT 1,
+  is_dirty BOOLEAN DEFAULT FALSE,
+  last_synced_at TIMESTAMP NULL,
+  conflict_data JSON NULL,
+  
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  FOREIGN KEY (university_id) REFERENCES universities(id) ON DELETE CASCADE,
+  FOREIGN KEY (course_offering_id) REFERENCES course_offerings(id) ON DELETE SET NULL,
+  FOREIGN KEY (last_message_id) REFERENCES messages(id) ON DELETE SET NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE,
+  
+  INDEX idx_message_threads_last_message (last_message_at),
+  INDEX idx_message_threads_course (course_offering_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### SQLite (Flutter)
+
+```sql
+CREATE TABLE message_threads (
+  id TEXT PRIMARY KEY,
+  university_id TEXT NOT NULL,
+  title TEXT,
+  thread_type TEXT CHECK(thread_type IN ('direct', 'group', 'course', 'class', 'announcement')) NOT NULL,
+  course_offering_id TEXT,
+  last_message_id TEXT,
+  last_message_at TEXT,
+  created_by TEXT NOT NULL,
+  sync_status TEXT DEFAULT 'synced',
+  sync_version INTEGER DEFAULT 1,
+  is_dirty INTEGER DEFAULT 0,
+  last_synced_at TEXT,
+  conflict_data TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (university_id) REFERENCES universities(id) ON DELETE CASCADE,
+  FOREIGN KEY (course_offering_id) REFERENCES course_offerings(id) ON DELETE SET NULL,
+  FOREIGN KEY (last_message_id) REFERENCES messages(id) ON DELETE SET NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_message_threads_last_message ON message_threads(last_message_at);
+CREATE INDEX idx_message_threads_course ON message_threads(course_offering_id);
+```
+
+---
+
+## 11. message_thread_members
+
+Tracks users who are members of a message thread.
+
+### MySQL (Laravel)
+
+```sql
+CREATE TABLE message_thread_members (
+  id VARCHAR(36) PRIMARY KEY,
+  university_id VARCHAR(36) NOT NULL,
+  thread_id VARCHAR(36) NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
+  is_admin BOOLEAN DEFAULT FALSE,
+  muted BOOLEAN DEFAULT FALSE,
+  left_at TIMESTAMP NULL,
+  added_by VARCHAR(36) NOT NULL,
+  
+  -- Sync metadata
+  sync_status VARCHAR(20) DEFAULT 'synced',
+  sync_version INT DEFAULT 1,
+  is_dirty BOOLEAN DEFAULT FALSE,
+  last_synced_at TIMESTAMP NULL,
+  conflict_data JSON NULL,
+  
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  FOREIGN KEY (university_id) REFERENCES universities(id) ON DELETE CASCADE,
+  FOREIGN KEY (thread_id) REFERENCES message_threads(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (added_by) REFERENCES users(id) ON DELETE CASCADE,
+  
+  UNIQUE KEY uk_thread_user (thread_id, user_id),
+  INDEX idx_message_thread_members_thread (thread_id),
+  INDEX idx_message_thread_members_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### SQLite (Flutter)
+
+```sql
+CREATE TABLE message_thread_members (
+  id TEXT PRIMARY KEY,
+  university_id TEXT NOT NULL,
+  thread_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  is_admin INTEGER DEFAULT 0,
+  muted INTEGER DEFAULT 0,
+  left_at TEXT,
+  added_by TEXT NOT NULL,
+  sync_status TEXT DEFAULT 'synced',
+  sync_version INTEGER DEFAULT 1,
+  is_dirty INTEGER DEFAULT 0,
+  last_synced_at TEXT,
+  conflict_data TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (university_id) REFERENCES universities(id) ON DELETE CASCADE,
+  FOREIGN KEY (thread_id) REFERENCES message_threads(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (added_by) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE(thread_id, user_id)
+);
+
+CREATE INDEX idx_message_thread_members_thread ON message_thread_members(thread_id);
+CREATE INDEX idx_message_thread_members_user ON message_thread_members(user_id);
 ```
 
 ---
@@ -648,7 +854,7 @@ CREATE INDEX idx_document_downloads_user ON document_downloads(user_id);
 
 ## 🎉 DATABASE SCHEMA COMPLETE
 
-All **38 tables** have been created with both **MySQL (Laravel)** and **SQLite (Flutter)** versions:
+All **41 tables** have been created with both **MySQL (Laravel)** and **SQLite (Flutter)** versions:
 
 ### Summary by Category:
 
@@ -659,6 +865,6 @@ All **38 tables** have been created with both **MySQL (Laravel)** and **SQLite (
 5. **Courses (4)**: courses, course_offerings, course_enrollments, course_prerequisites
 6. **Assignments (5)**: assignments, assignment_submissions, assignment_questions, assignment_rubrics, submission_files
 7. **Grading & Attendance (6)**: grades, grade_categories, grade_scales, class_sessions, attendance_records, attendance_excuses
-8. **Communication & Documents (8)**: messages, announcements, notifications, message_attachments, document_folders, documents, course_materials, document_downloads
+8. **Communication & Documents (11)**: messages, announcements, notifications, message_attachments, document_folders, documents, course_materials, document_downloads, message_recipients, message_threads, message_thread_members
 
-**Total: 38 Tables** ✅
+**Total: 41 Tables** ✅

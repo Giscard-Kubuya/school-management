@@ -12,6 +12,15 @@ class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
 
+  // Add a flag to prevent concurrent initializations
+  static bool _isInitializing = false;
+
+  // Track if FFI has been initialized
+  static bool _ffiInitialized = false;
+
+  // Development flag - set to false in production
+  static const bool _deleteDbOnInit = true; // Change to false for production
+
   factory DatabaseHelper() => _instance;
 
   DatabaseHelper._internal();
@@ -23,28 +32,52 @@ class DatabaseHelper {
       );
       return _database!;
     }
-    print('🔄 DatabaseHelper: Initializing new database...');
-    _database = await _initDatabase();
-    print('✅ DatabaseHelper: Database initialized successfully');
-    return _database!;
+
+    // Prevent concurrent initialization
+    if (_isInitializing) {
+      print('⏳ Database initialization already in progress, waiting...');
+      // Wait for initialization to complete
+      while (_isInitializing) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      // After waiting, check if database is now available
+      if (_database != null) {
+        print('✅ Database ready after waiting');
+        return _database!;
+      }
+    }
+
+    _isInitializing = true;
+    try {
+      print('🔄 DatabaseHelper: Initializing new database...');
+      _database = await _initDatabase();
+      print('✅ DatabaseHelper: Database initialized successfully');
+      return _database!;
+    } finally {
+      _isInitializing = false;
+    }
   }
 
   Future<Database> _initDatabase() async {
     print('🔄 DatabaseHelper: Initializing database...');
 
-    // Initialize FFI for non-Android/iOS platforms
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    // Initialize FFI for non-Android/iOS platforms (only once)
+    if (!_ffiInitialized &&
+        (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
       print(
         '🖥️  Initializing FFI for desktop platform (${Platform.operatingSystem})',
       );
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
+      _ffiInitialized = true;
+    } else if (_ffiInitialized) {
+      print('✅ FFI already initialized');
     } else {
       print(
         '📱 Using default SQLite implementation for ${Platform.operatingSystem}',
       );
     }
-    
+
     // Database version - increment this when schema changes
     const currentDbVersion = 2;
 
@@ -71,15 +104,31 @@ class DatabaseHelper {
     // In production, you might want to implement proper migrations instead of deleting
     // For development, we'll delete and recreate the database
     final dbFile = File(dbPath);
-    if (await dbFile.exists()) {
-      print('⚠️  Database exists. Deleting to start fresh...');
+    if (_deleteDbOnInit && await dbFile.exists()) {
+      print('⚠️  Database exists. Attempting to close and delete...');
       try {
+        // First, try to close any existing connections
+        try {
+          final existingDb = await databaseFactory.openDatabase(dbPath);
+          await existingDb.close();
+          print('🔒 Closed existing database connection');
+        } catch (e) {
+          print('ℹ️  No existing connection to close or already closed');
+        }
+
+        // Wait a moment for the file handle to be released
+        await Future.delayed(const Duration(milliseconds: 300));
+
+        // Now try to delete
         await dbFile.delete();
         print('🗑️  Deleted existing database file');
       } catch (e) {
         print('❌ Error deleting database file: $e');
-        rethrow;
+        print('ℹ️  Attempting to continue with existing database...');
+        // Don't rethrow - try to work with existing database
       }
+    } else if (!_deleteDbOnInit && await dbFile.exists()) {
+      print('ℹ️  Database exists. Using existing database (delete disabled)');
     }
 
     // Open the database with error handling
@@ -145,6 +194,16 @@ class DatabaseHelper {
   Future<void> _createUserTables(dynamic db) async {
     await db.execute(UserSchemas.users);
     await db.execute(UserSchemas.userSessions);
+    await db.execute(UserSchemas.administrators);
+    await db.execute(UserSchemas.teachers);
+    await db.execute(UserSchemas.students);
+    await db.execute(UserSchemas.userRoles);
+    await db.execute(UserSchemas.permissions);
+    await db.execute(UserSchemas.userPermissions);
+    await db.execute(UserSchemas.rolePermissions);
+    await db.execute(UserSchemas.auditLogs);
+    await db.execute(UserSchemas.passwordResetTokens);
+    await db.execute(UserSchemas.userPreferences);
   }
 
   Future<void> _createAcademicTables(dynamic db) async {
@@ -207,12 +266,10 @@ class DatabaseHelper {
   }
 
   Future<void> _createCommunicationTables(dynamic db) async {
-    // Communication related tables
-    await db.execute(CommunicationSchemas.messages);
-    await db.execute(CommunicationSchemas.messageAttachments);
-    await db.execute(CommunicationSchemas.announcements);
-    await db.execute(CommunicationSchemas.announcementRecipients);
-    await db.execute(CommunicationSchemas.notifications);
+    // Create only tables, not indexes (indexes are created separately in _createIndexes)
+    for (final schema in CommunicationSchemas.all) {
+      await db.execute(schema);
+    }
   }
 
   Future<void> _createDocumentTables(dynamic db) async {
@@ -221,38 +278,60 @@ class DatabaseHelper {
     await db.execute(DocumentSchemas.documents);
     await db.execute(DocumentSchemas.courseMaterials);
     await db.execute(DocumentSchemas.documentDownloads);
+    await db.execute(DocumentSchemas.documentPermissions);
+    await db.execute(DocumentSchemas.documentVersions);
   }
 
   Future<void> _createSystemTables(dynamic db) async {
     // System related tables only
     await db.execute(SystemSchemas.deviceConfigurations);
     await db.execute(SystemSchemas.deviceRegistrations);
+    await db.execute(SystemSchemas.pendingAccounts);
   }
 
   Future<void> _createIndexes(dynamic db) async {
     print('📊 Creating indexes for better query performance...');
-    
-    // Execute all schema indexes
+
+    // Execute all schema indexes with IF NOT EXISTS handling
     await _executeSchemaIndexes(db, AcademicSchemas.indexes, 'Academic');
     await _executeSchemaIndexes(db, UserSchemas.additionalIndexes, 'User');
     await _executeSchemaIndexes(db, AttendanceSchemas.indexes, 'Attendance');
     await _executeSchemaIndexes(db, AssignmentSchemas.indexes, 'Assignment');
     await _executeSchemaIndexes(db, FinancialSchemas.indexes, 'Financial');
-    await _executeSchemaIndexes(db, CommunicationSchemas.indexes, 'Communication');
+    await _executeSchemaIndexes(
+      db,
+      CommunicationSchemas.indexes,
+      'Communication',
+    );
     await _executeSchemaIndexes(db, DocumentSchemas.indexes, 'Document');
     await _executeSchemaIndexes(db, SystemSchemas.indexes, 'System');
-    
+
     print('✅ All indexes created successfully');
   }
-  
-  Future<void> _executeSchemaIndexes(dynamic db, List<String> indexes, String schemaName) async {
+
+  Future<void> _executeSchemaIndexes(
+    dynamic db,
+    List<String> indexes,
+    String schemaName,
+  ) async {
     if (indexes.isNotEmpty) {
       print('📊 Creating $schemaName schema indexes...');
       for (final index in indexes) {
         try {
-          await db.execute(index);
+          // Add IF NOT EXISTS to prevent duplicate index errors
+          String modifiedIndex = index;
+          if (!index.toUpperCase().contains('IF NOT EXISTS')) {
+            modifiedIndex = index.replaceFirst(
+              RegExp(r'CREATE\s+INDEX\s+', caseSensitive: false),
+              'CREATE INDEX IF NOT EXISTS ',
+            );
+          }
+          await db.execute(modifiedIndex);
         } catch (e) {
-          print('⚠️  Error creating index: $e');
+          // Only log as warning, don't stop execution
+          print(
+            '⚠️  Could not create index (may already exist): ${e.toString().split('\n').first}',
+          );
         }
       }
     }
@@ -268,7 +347,6 @@ class DatabaseHelper {
       print('✅ Database upgraded in ${stopwatch.elapsedMilliseconds}ms');
       if (oldVersion < 2 && newVersion >= 2) {
         // Example: Add new tables or columns for version 2
-        // await db.execute('ALTER TABLE users ADD COLUMN new_column TEXT');
         print(
           'ℹ️  No migration needed from version $oldVersion to $newVersion',
         );
@@ -290,31 +368,6 @@ class DatabaseHelper {
       print('❌ Error upgrading database: $e');
       rethrow;
     }
-  }
-
-  // Helper method to drop all tables (for development)
-  // This method is kept for potential future use but not currently referenced
-  // to avoid the unused code warning
-  Future<void> _dropAllTables(Database db) async {
-    final tables = [
-      DatabaseTables.rubricEvaluations,
-      DatabaseTables.submissionFiles,
-      DatabaseTables.assignmentSubmissions,
-      DatabaseTables.assignmentRubrics,
-      DatabaseTables.assignmentQuestions,
-      DatabaseTables.assignments,
-      // Add other tables as needed
-    ];
-
-    await db.transaction((txn) async {
-      for (final table in tables) {
-        try {
-          await txn.execute('DROP TABLE IF EXISTS $table');
-        } catch (e) {
-          print('Error dropping table $table: $e');
-        }
-      }
-    });
   }
 
   // Helper methods for common database operations
@@ -416,13 +469,55 @@ class DatabaseHelper {
   Future<void> resetDatabase() async {
     print('🔄 Resetting database...');
     await close();
+    _isInitializing = false; // Reset the flag
+
+    // Wait for file handles to be released
+    await Future.delayed(const Duration(milliseconds: 500));
+
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final dbPath =
         '${documentsDirectory.path}/school_man_core/school_management.db';
     final dbFile = File(dbPath);
     if (await dbFile.exists()) {
-      await dbFile.delete();
-      print('✅ Database reset complete');
+      try {
+        await dbFile.delete();
+        print('✅ Database reset complete');
+      } catch (e) {
+        print('❌ Error deleting database: $e');
+        print('💡 Try stopping the app completely and running again');
+        rethrow;
+      }
+    }
+  }
+
+  // Force delete database file (use with caution)
+  Future<void> forceDeleteDatabase() async {
+    print('🔄 Force deleting database...');
+
+    // Close database
+    await close();
+    _isInitializing = false;
+
+    // Wait longer for file handles
+    await Future.delayed(const Duration(seconds: 2));
+
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final dbPath =
+        '${documentsDirectory.path}/school_man_core/school_management.db';
+    final dbFile = File(dbPath);
+
+    if (await dbFile.exists()) {
+      try {
+        await dbFile.delete();
+        print('✅ Database force deleted successfully');
+      } catch (e) {
+        print('❌ Cannot force delete: $e');
+        print('💡 The database file is locked by another process');
+        print('💡 Close all app instances and try again');
+        rethrow;
+      }
+    } else {
+      print('ℹ️  Database file does not exist');
     }
   }
 }

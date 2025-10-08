@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,31 +40,84 @@ class _DataSyncPageState extends State<DataSyncPage> {
     try {
       setState(() {
         _isSyncing = true;
-        _status = 'Syncing with cloud...';
+        _status = 'Preparing data sync...';
         _progress = 0.0;
       });
 
-      // Simulate sync steps with progress updates
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() {
-        _status = 'Syncing user data...';
-        _progress = 0.3;
-      });
+      // Define data types to sync with their display names and weights
+      final dataTypes = [
+        {'name': 'universities', 'weight': 0.1},
+        {'name': 'students', 'weight': 0.6},
+        {'name': 'courses', 'weight': 0.3},
+      ];
 
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() {
-        _status = 'Downloading course information...';
-        _progress = 0.6;
-      });
+      double currentProgress = 0.0;
+      final Map<String, dynamic> syncData = {};
 
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() {
-        _status = 'Finalizing setup...';
-        _progress = 0.9;
-      });
+      // Process each data type
+      for (var dataType in dataTypes) {
+        final String typeName = dataType['name'] as String;
+        final double weight = dataType['weight'] as double;
+        
+        setState(() {
+          _status = 'Loading $typeName...';
+        });
 
-      // Save device info
+        try {
+          // Simulate API call to fetch data
+          await Future.delayed(const Duration(seconds: 1));
+          
+          // In a real app, you would fetch data from your API here
+          // final response = await apiClient.get('/api/$typeName');
+          // syncData[typeName] = response.data;
+          
+          // For demonstration, using mock data
+          switch (typeName) {
+            case 'universities':
+              syncData[typeName] = [
+                {'id': 1, 'name': 'University of Technology'},
+                // Add more universities as needed
+              ];
+              break;
+            case 'students':
+              syncData[typeName] = List.generate(
+                50, 
+                (index) => {
+                  'id': index + 1,
+                  'name': 'Student ${index + 1}',
+                  'university_id': 1,
+                },
+              );
+              break;
+            case 'courses':
+              syncData[typeName] = [
+                {'id': 1, 'name': 'Computer Science', 'university_id': 1},
+                {'id': 2, 'name': 'Mathematics', 'university_id': 1},
+                {'id': 3, 'name': 'Physics', 'university_id': 1},
+                // Add more courses as needed
+              ];
+              break;
+          }
+          
+          currentProgress += weight;
+          setState(() {
+            _progress = currentProgress;
+            _status = 'Loaded ${syncData[typeName].length} $typeName';
+          });
+          
+          // Small delay to show progress
+          await Future.delayed(const Duration(milliseconds: 300));
+          
+        } catch (e) {
+          'Error loading $typeName: $e'.logError();
+          // Continue with next data type even if one fails
+          continue;
+        }
+      }
+
+      // Save the loaded data to local storage
       await _saveDeviceInfo();
+      await _saveSyncData(syncData);
 
       setState(() {
         _status = 'Sync completed successfully!';
@@ -73,7 +128,6 @@ class _DataSyncPageState extends State<DataSyncPage> {
       // Navigate to auth screen after a short delay
       await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
-        // Clear all routes and go to login using GoRouter
         final router = GoRouter.of(context);
         if (mounted) {
           // This will clear all routes and go to login
@@ -88,6 +142,32 @@ class _DataSyncPageState extends State<DataSyncPage> {
           _status = 'Sync failed. Please check your connection and try again.';
         });
       }
+    }
+  }
+
+  Future<void> _saveSyncData(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Save each data type to shared preferences
+      await Future.wait([
+        // Save universities
+        if (data['universities'] != null)
+          prefs.setString('universities', jsonEncode(data['universities'])),
+          
+        // Save students
+        if (data['students'] != null)
+          prefs.setString('students', jsonEncode(data['students'])),
+          
+        // Save courses
+        if (data['courses'] != null)
+          prefs.setString('courses', jsonEncode(data['courses'])),
+      ]);
+      
+      'Sync data saved successfully'.logInfo();
+    } catch (e) {
+      'Error saving sync data: $e'.logError();
+      rethrow;
     }
   }
 
